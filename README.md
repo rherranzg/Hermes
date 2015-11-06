@@ -47,5 +47,5 @@ The value of this tag is a cron expression, including wildcards, numbers, ranges
 
 - Currently it only supports EC2 service. More services coming.
 - The HOUR you define in cron, is Ireland Time (usually 1 hour less than Madrid time).
-- You must specify time interval in which Lambda function runs. You must match the "current" time (the time Lambda function runs) with the exact time in your cron expression. Wildcards and ranges are recommended.
+- When you configure the Lambda function, you specify time interval which Lambda function runs. You must match the "current" time (the exact time where Lambda function runs) with the exact time you define in your cron expression. Wildcards and ranges are recommended.
 - The resources must be created out of Lambda before using this function.
