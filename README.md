@@ -26,4 +26,26 @@ You need to do some manual steps before start.
 - Create a Role with lambdaCronIAM.json permissions and associate to this function.
 - Default values for the advanced settings should fit. Maybe increment timeout to 30 secs...
 
+## Usage
+
+### EC2
+
+Tag your EC2 instances with this tags:
+
+- startTime
+- stopTime
+- more in progress... for example, createAMITime, or terminateTime.
+
+The value of this tag is a cron expression, including wildcards, numbers, ranges and enumerations. Some examples are:
+
+- startTime: 0 9 * * 1-5 (weekdays at 9AM, start my instances)
+- stopTime: 0 18 * * *  (my instances must be stopped at 6PM)
+- startTime: 0 12 7,14,21 * * (at 12 AM, the days 7, 14 and 21 of every month, start an instance that perform some administrative tasks)
+
+
 ## Limitations
+
+- Currently it only supports EC2 service. More services coming.
+- The HOUR you define in cron, is Ireland Time (usually 1 hour less than Madrid time).
+- You must specify time interval in which Lambda function runs. You must match the "current" time (the time Lambda function runs) with the exact time in your cron expression. Wildcards and ranges are recommended.
+- The resources must be created out of Lambda before using this function.
