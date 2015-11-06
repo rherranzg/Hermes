@@ -109,7 +109,7 @@ def isTime(cronString):
     
 def cronExec(cron, instance, action):
     
-    print "> {3}. La fecha actual es {0} y el cron es {1}".format(t, cron, action)
+    print "> {2}. La fecha actual es {0} y el cron es {1}".format(t, cron, action)
     
     if isTime(cron):
         if action == "start" and instance.state["Name"] == "stopped":
@@ -126,7 +126,6 @@ def cronExec(cron, instance, action):
             print "#################################"
             instance.stop()
     
-
 def checkEC2(ec2):
     '''List and print tags in EC2 running instances
     '''
@@ -147,19 +146,19 @@ def checkEC2(ec2):
 def lambda_handler(event, context):
     
     # start connectivity
-    
-    #ec2_client = boto3.client('ec2')
     s = boto3.Session()
     ec2 = s.resource('ec2')
+    #rds = s.resource('rds')
     
     try:
-        if not checkEC2(ec2):
-            raise Exception('Validation failed')
+        if checkEC2(ec2):
+            return "Success!"
+
+        #if checkRDS(rds):
+        #   return "Success!"
+
     except:
         print('Check failed!')
         raise
-    else:
-        print('Check passed!')
-        return "Success!"
     finally:
         print('Check complete at {}'.format(str(datetime.now())))
