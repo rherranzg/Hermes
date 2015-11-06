@@ -10,6 +10,8 @@ This project is its very early days, there are a lot of work to do yet :)
 
 ## Set up a new Lambda Function.
 
+You need to do some manual steps before start.
+
 - Access to Lambda service in your AWS console.
 - Click on "Create a Lambda function".
 - Select "lambda-canary" template. This template say that you are going to use python as programming languaje, .and you are also using Lambda as a scheduling event.
@@ -17,7 +19,6 @@ This project is its very early days, there are a lot of work to do yet :)
 - Write a [relevant] description.
 - Select the time which your function will be executed (1 hour is enough for most of the cases).
 - Click Next.
-
 - Select a Name for your function. Something like 'LambdaCron', to be original :)
 - Write a [relevant] description.
 - The Runtime must be python2.7
@@ -25,3 +26,4 @@ This project is its very early days, there are a lot of work to do yet :)
 - Create a Role with lambdaCronIAM.json permissions and associate to this function.
 - Default values for the advanced settings should fit. Maybe increment timeout to 30 secs...
 
+## Limitations
