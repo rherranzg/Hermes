@@ -4,7 +4,7 @@ An AWS Lambda function and its proper IAM configurations to make 'Cron as a Serv
 
 ## Global Idea
 
-The main idea of this project is to be able to do administrator and repetitive tasks in your entire infrestructure via tags. With this Lambda function you could, for example, shut down your development environment at 6PM on weekdays, writing a tag named "stopTime" on every instance involved with the value "0 18 * * 1-5".
+The main idea of this project is to be able to do administrator and repetitive tasks in your entire infrestructure via tags. With this Lambda function you could, for example, shut down your development environment at 6PM on weekdays, writing a tag named "stopTime" with the value "0 18 * * 1-5" on every instance involved.
 
 This project is its very early days, there are a lot of work to do yet :)
 
