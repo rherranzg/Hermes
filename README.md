@@ -8,24 +8,6 @@ The main idea of this project is to be able to do administrator and repetitive t
 
 This project is its very early days, there are a lot of work to do yet :)
 
-## Set up a new Lambda Function.
-
-You need to do some manual steps before start.
-
-- Access to Lambda service in your AWS console.
-- Click on "Create a Lambda function".
-- Select "lambda-canary" template. This template say that you are going to use python as programming languaje, .and you are also using Lambda as a scheduling event.
-- Choose a name for your scheduled event.
-- Write a [relevant] description.
-- Select the time which your function will be executed (1 hour is enough for most of the cases).
-- Click Next.
-- Select a Name for your function. Something like 'LambdaCron', to be original :)
-- Write a [relevant] description.
-- The Runtime must be python2.7
-- Copy&Paste the code in lambdaCron.py in the textarea below.
-- Create a role for this lambda function with two policies attached: one with lambdaCronEC2.json permissions and another one with lambdaCronEBS.json. Associate them to lambda function.
-- Default values for the advanced settings should fit. Maybe increment timeout to 30 secs...
-
 ## Usage
 
 You must write a proper tag in resources in order to perform some administrator task, such as stop or start an instance, generate a snapshot from an EBS, etc.
@@ -38,20 +20,37 @@ startTime | 0 9 * * 1-5 | (weekdays at 9AM, start my instances)
 stopTime | 0 18 * * * |  (my instances must be stopped at 6PM)
 startTime | 0 12 7,14,21 * * | (at 12 AM, the days 7, 14 and 21 of every month, start an instance)
 
+## Set up a new Lambda Function.
+
+You need to do some manual steps before start.
+
+- Access to **Lambda** service in your AWS console.
+- Click on **Create a Lambda function**.
+- Select **lambda-canary** template. This template say that you are going to use python as programming languaje, and you are also using Lambda as a **scheduling event**.
+- Choose a name for your scheduled event.
+- Write a [relevant] description.
+- Select the time which your function will be executed (1 hour is enough for most of the cases).
+- Click Next.
+- Select a Name for your function. Something like **LambdaCron**, to be original :)
+- Write a [relevant] description.
+- The Runtime must be **python2.7**
+- Copy&Paste the code in **lambdaCron.py** in the textarea below.
+- Create a role for this lambda function with two policies attached: one with **lambdaCronEC2.json** permissions and another one with **lambdaCronEBS.json**. Associate them to lambda function.
+- Default values for the advanced settings should fit. Maybe increment timeout to 30 secs...
 
 ### EC2
 
 Tag your EC2 instances with this tags:
 
-- startTime: Start the instance.
-- stopTime: Stop the instance.
+- **startTime**: Start the instance.
+- **stopTime**: Stop the instance.
 - more in progress... for example, rebootTime, terminateTime or createAMITime.
 
 ### EBS
 
 Current supported tags for EBS Volumes are:
 
-- createSnapshotTime: Generates a snapshot of specified EBS Volume.
+- **createSnapshotTime**: Generates a snapshot of specified EBS Volume.
 
 ## Limitations
 
