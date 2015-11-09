@@ -4,13 +4,13 @@ An AWS Lambda function and its proper IAM configurations to make 'Cron as a Serv
 
 ## Global Idea
 
-The main idea of this project is to be able to do administrator and repetitive tasks in your entire infrestructure via tags. With this Lambda function you could, for example, shut down your development environment at 6PM on weekdays, writing a tag named "stopTime" with the value "0 18 * * 1-5" on every instance involved.
+The main idea of this project is to be able to perform administrator and repetitive tasks in your entire infrestructure via tags. With this Lambda function you could, for example, shut down a development environment at 6PM on weekdays, writing a tag named "stopTime" with the value "0 18 * * 1-5" on every instance involved.
 
 This project is its very early days, there are a lot of work to do yet :)
 
 ## Usage
 
-You must write a proper tag in resources in order to perform some administrator task, such as stop or start an instance, generate a snapshot from an EBS, etc.
+You must write a proper tag in resources in order to perform some administrator task, such as stop or start an instance, generate snapshots from EBSs, etc.
 
 The name of the tag is the action, and the value is a cron expression, including wildcards, numbers, ranges and enumerations. Some examples are:
 
@@ -44,7 +44,7 @@ Tag your EC2 instances with this tags:
 
 - **startTime**: Start the instance.
 - **stopTime**: Stop the instance.
-- more in progress... for example, rebootTime, terminateTime or createAMITime.
+- and more to come... for example, rebootTime, terminateTime or createAMITime.
 
 ### EBS
 
