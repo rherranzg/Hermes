@@ -107,7 +107,7 @@ def isTime(cronString):
     if checkMinutes(cronString) and checkHours(cronString) and checkDays(cronString) and checkMonths(cronString) and checkWeekdays(cronString):
         return True
     
-def cronExec(cron, instance, action):
+def cronEC2Exec(cron, instance, action):
     
     print "> {2}. La fecha actual es {0} y el cron es {1}".format(t, cron, action)
     
@@ -125,23 +125,44 @@ def cronExec(cron, instance, action):
             print "## Stopping instance {0}...".format(instance.id)
             print "#################################"
             instance.stop()
+
+def cronEBSExec(cron, ebs, action):
     
+    if isTime(cron):
+        if action == "createSnapshot":
+            print ">> Creamos el Snapshot!!"
+            ebs.create_snapshot(
+                Description = "Snapshot created by LambdaCron at {0}-{1}-{2} {3}h {4}' {5}''".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
+                )
+
+
 def checkEC2(ec2):
-    '''List and print tags in EC2 running instances
+    '''List tags in EC2 instances and perform operations on instances
     '''
     
     for i in ec2.instances.all():
-        print "> Instance {0} is {1}".format(i.id, i.state["Name"])
+        #print "> Instance {0} is {1}".format(i.id, i.state["Name"])
         for tag in i.tags:
             if tag['Key'] == "startTime":
                 #print ">> Found an 'startTime' tag..."
-                cronExec(tag['Value'], i, "start")
+                cronEC2Exec(tag['Value'], i, "start")
                 
             if  tag['Key'] == "stopTime":
                 #print ">> Found an 'stopTime' tag..."
-                cronExec(tag['Value'], i, "stop")
+                cronEC2Exec(tag['Value'], i, "stop")
                 
     return 1
+
+def checkEBS(ec2):
+    '''List tags in EBS Volumes and perform operations on them
+    '''
+    
+    for ebs in ec2.volumes.all():
+        print "Volumen {0} con tags {1}".format(ebs.id, ebs.tags)
+        for tag in ebs.tags:
+            if tag['Key'] == "createSnapshotTime":
+                print ">> Found a 'createSnapshotTime' tag..."
+                cronEBSExec(tag['Value'], ebs, "createSnapshot")
 
 def lambda_handler(event, context):
     
@@ -152,7 +173,9 @@ def lambda_handler(event, context):
     
     try:
         if checkEC2(ec2):
-            return "Success!"
+            print "EC2 Success!"
+        if checkEBS(ec2):
+            print "Volumes Success!"
 
         #if checkRDS(rds):
         #   return "Success!"

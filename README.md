@@ -28,20 +28,30 @@ You need to do some manual steps before start.
 
 ## Usage
 
+You must write a proper tag in resources in order to perform some administrator task, such as stop or start an instance, generate a snapshot from an EBS, etc.
+
+The name of the tag is the action, and the value is a cron expression, including wildcards, numbers, ranges and enumerations. Some examples are:
+
+Tage Name | Tag Value | Description
+--- | --- | ---
+startTime | 0 9 * * 1-5 | (weekdays at 9AM, start my instances)
+stopTime | 0 18 * * * |  (my instances must be stopped at 6PM)
+startTime | 0 12 7,14,21 * * | (at 12 AM, the days 7, 14 and 21 of every month, start an instance)
+
+
 ### EC2
 
 Tag your EC2 instances with this tags:
 
-- startTime
-- stopTime
-- more in progress... for example, createAMITime, or terminateTime.
+- startTime: Start the instance.
+- stopTime: Stop the instance.
+- more in progress... for example, rebootTime, terminateTime or createAMITime.
 
-The value of this tag is a cron expression, including wildcards, numbers, ranges and enumerations. Some examples are:
+### EBS
 
-- startTime: 0 9 * * 1-5 (weekdays at 9AM, start my instances)
-- stopTime: 0 18 * * *  (my instances must be stopped at 6PM)
-- startTime: 0 12 7,14,21 * * (at 12 AM, the days 7, 14 and 21 of every month, start an instance that perform some administrative tasks)
+Current supported tags for EBS Volumes are:
 
+- createSnapshotTime: Generates a snapshot of the specific EBS Volume.
 
 ## Limitations
 
