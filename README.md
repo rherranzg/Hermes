@@ -23,7 +23,7 @@ You need to do some manual steps before start.
 - Write a [relevant] description.
 - The Runtime must be python2.7
 - Copy&Paste the code in lambdaCron.py in the textarea below.
-- Create a Role with lambdaCronIAM.json permissions and associate to this function.
+- Create a role for this lambda function with two policies attached: one with lambdaCronEC2.json permissions and another one with lambdaCronEBS.json. Associate them to lambda function.
 - Default values for the advanced settings should fit. Maybe increment timeout to 30 secs...
 
 ## Usage
@@ -33,7 +33,7 @@ You must write a proper tag in resources in order to perform some administrator 
 The name of the tag is the action, and the value is a cron expression, including wildcards, numbers, ranges and enumerations. Some examples are:
 
 Tage Name | Tag Value | Description
---- | --- | ---
+---- | ---- | ---
 startTime | 0 9 * * 1-5 | (weekdays at 9AM, start my instances)
 stopTime | 0 18 * * * |  (my instances must be stopped at 6PM)
 startTime | 0 12 7,14,21 * * | (at 12 AM, the days 7, 14 and 21 of every month, start an instance)
@@ -51,11 +51,11 @@ Tag your EC2 instances with this tags:
 
 Current supported tags for EBS Volumes are:
 
-- createSnapshotTime: Generates a snapshot of the specific EBS Volume.
+- createSnapshotTime: Generates a snapshot of specified EBS Volume.
 
 ## Limitations
 
-- Currently it only supports EC2 service. More services coming.
+- Currently it only supports EC2 and EBS services. More services coming.
 - The HOUR you define in cron, is Ireland Time (usually 1 hour less than Madrid time).
 - When you configure the Lambda function, you specify time interval which Lambda function runs. You must match the "current" time (the exact time where Lambda function runs) with the exact time you define in your cron expression. Wildcards and ranges are recommended.
 - The resources must be created out of Lambda before using this function.
