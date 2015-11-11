@@ -142,15 +142,16 @@ def checkEC2(ec2):
     
     for i in ec2.instances.all():
         #print "> Instance {0} is {1}".format(i.id, i.state["Name"])
-        for tag in i.tags:
-            if tag['Key'] == "startTime":
-                #print ">> Found an 'startTime' tag..."
-                cronEC2Exec(tag['Value'], i, "start")
-                
-            if  tag['Key'] == "stopTime":
-                #print ">> Found an 'stopTime' tag..."
-                cronEC2Exec(tag['Value'], i, "stop")
-                
+        if i.tags:
+            for tag in i.tags:
+                if tag['Key'] == "startTime":
+                    #print ">> Found an 'startTime' tag..."
+                    cronEC2Exec(tag['Value'], i, "start")
+            
+                if  tag['Key'] == "stopTime":
+                    #print ">> Found an 'stopTime' tag..."
+                    cronEC2Exec(tag['Value'], i, "stop")
+            
     return 1
 
 def checkEBS(ec2):
@@ -158,11 +159,14 @@ def checkEBS(ec2):
     '''
     
     for ebs in ec2.volumes.all():
-        print "Volumen {0} con tags {1}".format(ebs.id, ebs.tags)
-        for tag in ebs.tags:
-            if tag['Key'] == "createSnapshotTime":
-                print ">> Found a 'createSnapshotTime' tag..."
-                cronEBSExec(tag['Value'], ebs, "createSnapshot")
+        #print "Volumen {0} con tags {1}".format(ebs.id, ebs.tags)
+        if ebs.tags:
+            for tag in ebs.tags:
+                if tag['Key'] == "createSnapshotTime":
+                    print ">> Found a 'createSnapshotTime' tag..."
+                    cronEBSExec(tag['Value'], ebs, "createSnapshot")
+    
+    return 1
 
 def lambda_handler(event, context):
     
@@ -185,3 +189,4 @@ def lambda_handler(event, context):
         raise
     finally:
         print('Check complete at {}'.format(str(datetime.now())))
+        return "OK"
