@@ -1,6 +1,6 @@
-# AWS Lambda Cron
+# AWS Hermes
 
-An AWS Lambda function and its proper IAM configurations to make 'Cron as a Service' magic happens.
+Hermes is an AWS Lambda function and its proper IAM configurations to make 'Cron as a Service' magic happens.
 
 ## Global Idea
 
