@@ -26,7 +26,7 @@ def match(unit, range):
     # Range parameter must match with some valid cron expression (number, range or enumeration) -> "*", "0", "1-3", "1,3,5,7", etc
     pattern = re.compile("^[0-9]+-[0-9]+$|^[0-9]+(,[0-9]+)*$")
     if not pattern.match(range):
-        print "There is an error in the cron line"
+        #print "There is an error in the cron line"
         return False
     
     # If range's length = 1, must be the exact unit number
@@ -52,50 +52,22 @@ def match(unit, range):
 def checkMinutes(cronString):
     
     return match(t.minute, cronString.split()[0])
-    '''if match(t.minute, cronString.split()[0]):
-        print ">> Mins OK"
-        return True
-    else:
-        print ">> Mins NOT OK"
-        return False'''
-
 
 def checkHours(cronString):
     
     return match(t.hour, cronString.split()[1])
-    '''if match(t.hour, cronString.split()[1]):
-        print ">> Hour OK"
-        return True
-    else:
-        return False'''
-
 
 def checkDays(cronString):
     
     return match(t.day, cronString.split()[2])
-    '''if match(t.day, cronString.split()[2]):
-        print ">> Day OK"
-        return True
-    else:
-        return False'''
 
 def checkMonths(cronString):
 
     return match(t.month, cronString.split()[3])
-    '''if match(t.month, cronString.split()[3]):
-        print ">> Month OK"
-        return True
-    else:
-        return False'''
 
 def checkWeekdays(cronString):
 
     return match(t.isoweekday(), cronString.split()[4])
-    '''if match(t.isoweekday(), cronString.split()[4]):
-        print ">> Weekday OK"
-        return True
-    else:
-        return False'''
         
 def isTime(cronString):
     '''
@@ -163,7 +135,7 @@ def checkEBS(ec2):
         if ebs.tags:
             for tag in ebs.tags:
                 if tag['Key'] == "createSnapshotTime":
-                    print ">> Found a 'createSnapshotTime' tag..."
+                    #print ">> Found a 'createSnapshotTime' tag..."
                     cronEBSExec(tag['Value'], ebs, "createSnapshot")
     
     return 1
@@ -173,16 +145,12 @@ def lambda_handler(event, context):
     # start connectivity
     s = boto3.Session()
     ec2 = s.resource('ec2')
-    #rds = s.resource('rds')
     
     try:
         if checkEC2(ec2):
             print "EC2 Success!"
         if checkEBS(ec2):
             print "Volumes Success!"
-
-        #if checkRDS(rds):
-        #   return "Success!"
 
     except:
         print('Check failed!')
