@@ -31,11 +31,11 @@ You need to do some manual steps before start.
 - Write a [relevant] description.
 - Select the time which your function will be executed (1 hour is enough for most of the cases).
 - Click Next.
-- Select a Name for your function. Something like **LambdaCron**, to be original :)
+- Select a Name for your function. Something like **Hermes**, to be original :)
 - Write a [relevant] description.
 - The Runtime must be **python2.7**
-- Copy&Paste the code in **lambdaCron.py** in the textarea below.
-- Create a role for this lambda function with two policies attached: one with **lambdaCronEC2.json** permissions and another one with **lambdaCronEBS.json**. Associate them to lambda function.
+- Copy&Paste the code in **hermes.py** in the textarea below.
+- Create a role for this lambda function with two policies attached: one with **hermesEC2.json** permissions and another one with **hermesEBS.json**. Associate them to lambda function.
 - Default values for the advanced settings should fit. Maybe increment timeout to 30 secs...
 
 ### EC2
