@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 from urllib2 import urlopen
 import boto3
 import re
@@ -81,7 +81,7 @@ def isTime(cronString):
     
 def cronEC2Exec(cron, instance, action):
     
-    print "> {2}. La fecha actual es {0} y el cron es {1}".format(t, cron, action)
+    print "> {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
     
     if isTime(cron):
         if action == "start" and instance.state["Name"] == "stopped":
@@ -97,6 +97,14 @@ def cronEC2Exec(cron, instance, action):
             print "## Stopping instance {0}...".format(instance.id)
             print "#################################"
             instance.stop()
+            
+        if action == "createAmi":
+            # Create AMI
+            print "#################################"
+            print "## Creating AMI for instance {0}...".format(instance.id)
+            print "#################################"
+            client = boto3.client('ec2')
+            response = client.create_image( DryRun=False, InstanceId=instance.id, Name='ami-{0}-{1}'.format(instance.id, date.today()), Description='AMI backup for instance {0}'.format(instance.id), NoReboot=True)
 
 def cronEBSExec(cron, ebs, action):
     
@@ -123,8 +131,12 @@ def checkEC2(ec2):
                 if  tag['Key'] == "stopTime":
                     #print ">> Found an 'stopTime' tag..."
                     cronEC2Exec(tag['Value'], i, "stop")
-            
-    return 1
+                    
+                if  tag['Key'] == "createAmiTime":
+                    #print ">> Found an 'stopTime' tag..."
+                    cronEC2Exec(tag['Value'], i, "createAmi")
+
+    return True
 
 def checkEBS(ec2):
     '''List tags in EBS Volumes and perform operations on them
@@ -149,11 +161,12 @@ def lambda_handler(event, context):
     try:
         if checkEC2(ec2):
             print "EC2 Success!"
-        if checkEBS(ec2):
-            print "Volumes Success!"
+        #if checkEBS(ec2):
+        #    print "Volumes Success!"
 
-    except:
+    except Exception as e:
         print('Check failed!')
+        print str(e)
         raise
     finally:
         print('Check complete at {}'.format(str(datetime.now())))
