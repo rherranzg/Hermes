@@ -161,8 +161,8 @@ def lambda_handler(event, context):
     try:
         if checkEC2(ec2):
             print "EC2 Success!"
-        #if checkEBS(ec2):
-        #    print "Volumes Success!"
+        if checkEBS(ec2):
+            print "Volumes Success!"
 
     except Exception as e:
         print('Check failed!')
