@@ -5,9 +5,9 @@
             "Sid": "Stmt1446724193000",
             "Effect": "Allow",
             "Action": [
-                "ec2:DescribeInstanceStatus",
-                "ec2:DescribeInstances",
-                "ec2:DescribeTags",
+                "ec2:Describe*",
+                "ec2:CreateImage",
+                "ec2:CreateSnapshot",
                 "ec2:StartInstances",
                 "ec2:StopInstances"
             ],
