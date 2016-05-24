@@ -124,11 +124,11 @@ def checkEC2(ec2):
         #print "> Instance {0} is {1}".format(i.id, i.state["Name"])
         if i.tags:
             for tag in i.tags:
-                if tag['Key'] == "startTime":
+                if tag['Key'] == "startTime" and tag['Value'] is not None:
                     #print ">> Found an 'startTime' tag..."
                     cronEC2Exec(tag['Value'], i, "start")
             
-                if  tag['Key'] == "stopTime":
+                if  tag['Key'] == "stopTime" and tag['Value'] is not None:
                     #print ">> Found an 'stopTime' tag..."
                     cronEC2Exec(tag['Value'], i, "stop")
                     
@@ -146,11 +146,11 @@ def checkEBS(ec2):
         #print "Volumen {0} con tags {1}".format(ebs.id, ebs.tags)
         if ebs.tags:
             for tag in ebs.tags:
-                if tag['Key'] == "createSnapshotTime":
-                    #print ">> Found a 'createSnapshotTime' tag..."
+                if tag['Key'] == "createSnapshotTime" and tag['Value'] is not None:
+                    print ">> Found a 'createSnapshotTime' tag with value {}".format(tag['Value'])
                     cronEBSExec(tag['Value'], ebs, "createSnapshot")
     
-    return 1
+    return True
 
 def lambda_handler(event, context):
     
@@ -161,8 +161,8 @@ def lambda_handler(event, context):
     try:
         if checkEC2(ec2):
             print "EC2 Success!"
-        #if checkEBS(ec2):
-        #    print "Volumes Success!"
+        if checkEBS(ec2):
+            print "Volumes Success!"
 
     except Exception as e:
         print('Check failed!')

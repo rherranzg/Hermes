@@ -1,12 +1,16 @@
-{
+{{
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "Stmt1447066107000",
+            "Sid": "Stmt1446724193000",
             "Effect": "Allow",
             "Action": [
+                "ec2:Describe*",
+                "ec2:CreateImage",
                 "ec2:CreateSnapshot",
-                "ec2:DescribeVolumes"
+                "ec2:DeregisterImage",
+                "ec2:StartInstances",
+                "ec2:StopInstances"
             ],
             "Resource": [
                 "*"
@@ -14,3 +18,4 @@
         }
     ]
 }
+
