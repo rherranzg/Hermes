@@ -88,6 +88,9 @@ def cronEC2Exec(cron, instance, action):
     '''
 
     if DEBUG:   print "> {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
+    if cron is None:
+        print "Empty cron expression!"
+        return True
     
     if isTime(cron):
         if action == "start" and instance.state["Name"] == "stopped":
@@ -116,6 +119,9 @@ def cronAMIExec(cron, ami, action):
     Function to control operations on AMIs
     '''
     if DEBUG:   print "[cronAMIExec] > {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
+    if cron is None:
+        print "Empty cron expression!"
+        return True
     
     if isTime(cron):
 
@@ -124,14 +130,17 @@ def cronAMIExec(cron, ami, action):
             print "#################################"
             print "## Deleting AMI {0}...".format(ami)
             print "#################################"
-            client = boto3.client('ec2')
-            response = client.deregister_image( DryRun=False, ImageId=ami )
+            response = ec2_client.deregister_image( DryRun=False, ImageId=ami )
 
 def cronEBSExec(cron, ebs, action):
     '''
     Function to control operations on EBSs
     '''
-    
+    if DEBUG:   print "[cronEBSExec] > {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
+    if cron is None:
+        print "Empty cron expression!"
+        return True
+        
     if isTime(cron):
         if action == "createSnapshot":
             # Create Snapshot
@@ -142,6 +151,23 @@ def cronEBSExec(cron, ebs, action):
                 Description = "Snapshot created by LambdaCron at {0}-{1}-{2} {3}h {4}' {5}''".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
                 )
 
+def cronSnapExec(cron, snap, action):
+    '''
+    Function to control operations on Snapshots
+    '''
+    if DEBUG:   print "[cronSnapExec] > {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
+    if cron is None:
+        print "Empty cron expression!"
+        return True
+    
+    if isTime(cron):
+
+        if action == "delete" and snap is not None:
+            # Delete Snapshot
+            print "#################################"
+            print "## Deleting Snap {0}...".format(snap)
+            print "#################################"
+            response = ec2_client.delete_snapshot( DryRun=False, SnapshotId=snap )
 
 def checkEC2(ec2):
     '''
@@ -197,6 +223,22 @@ def checkEBS(ec2):
                     if DEBUG:   print ">> Found a 'createSnapshotTime' tag with value {}".format(tag['Value'])
                     cronEBSExec(tag['Value'], ebs, "createSnapshot")
     
+def checkSnapshots():
+    '''
+    Function which lists snapshots, for example, to perform deletions
+    '''
+    
+    snaps = ec2_client.describe_snapshots(Filters=[ { 'Name': 'tag-key', 'Values': [ "deleteSnapshotTime" ] } ])
+    if snaps is None:
+        return True
+        
+    for snap in snaps["Snapshots"]:
+        if DEBUG:   print "[checkSnapshots] El snap {0} tiene los tags {1}".format(snap["SnapshotId"], snap["Tags"])
+            
+        for tag in snap["Tags"]:
+            if tag['Key'] == "deleteSnapshotTime":
+                cronSnapExec(tag['Value'], snap["SnapshotId"], "delete")
+
     return True
 
 def lambda_handler(event, context):
@@ -212,6 +254,8 @@ def lambda_handler(event, context):
             print "AMIs checked!"
         if checkEBS(ec2):
             print "Volumes checked!"
+        if checkSnapshots():
+            print "Snaps checked!"
 
     except Exception as e:
         print('Check failed!')
@@ -220,9 +264,3 @@ def lambda_handler(event, context):
     finally:
         print('Check complete at {}'.format(str(datetime.now())))
         return "OK"
-<<<<<<< HEAD
-
-def "__name__" == "__main__":
-    lambda_handler(None, None)
-=======
->>>>>>> ed7b023b01e9fc6f4d9cf6730bef2512370533c5

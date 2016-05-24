@@ -59,6 +59,12 @@ Current supported tags for AMIs are:
 
 - **deleteAmiTime**: Delete the specified AMI
 
+### Snapshot
+
+Current supported tags for Snapshots are:
+
+- **deleteSnapshotTime**: Delete the specified Snapshot
+
 ## Limitations
 
 - Currently it only supports EC2 and EBS services. More services coming.
