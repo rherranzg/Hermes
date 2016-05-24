@@ -5,6 +5,9 @@ import re
 
 REGION = "eu-west-1"
 t = datetime.now()
+DEBUG = True
+
+ec2_client = boto3.client('ec2')
 
 def match(unit, range):
     '''
@@ -106,11 +109,27 @@ def cronEC2Exec(cron, instance, action):
             client = boto3.client('ec2')
             response = client.create_image( DryRun=False, InstanceId=instance.id, Name='ami-{0}-{1}'.format(instance.id, date.today()), Description='AMI backup for instance {0}'.format(instance.id), NoReboot=True)
 
+def cronAMIExec(cron, ami, action):
+    if DEBUG:
+        print "[cronAMIExec] > {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
+    
+    if isTime(cron):
+        if action == "delete" and ami is not None:
+            # Delete AMI
+            print "#################################"
+            print "## Deleting AMI {0}...".format(ami)
+            print "#################################"
+            client = boto3.client('ec2')
+            response = client.deregister_image( DryRun=False, ImageId=ami )
+
 def cronEBSExec(cron, ebs, action):
     
     if isTime(cron):
         if action == "createSnapshot":
-            print ">> Creamos el Snapshot!!"
+            # Create Snapshot
+            print "#################################"
+            print "## Creating Snapshot {0}...".format(ebs)
+            print "#################################"
             ebs.create_snapshot(
                 Description = "Snapshot created by LambdaCron at {0}-{1}-{2} {3}h {4}' {5}''".format(t.year, t.month, t.day, t.hour, t.minute, t.second)
                 )
@@ -125,29 +144,51 @@ def checkEC2(ec2):
         if i.tags:
             for tag in i.tags:
                 if tag['Key'] == "startTime" and tag['Value'] is not None:
-                    #print ">> Found an 'startTime' tag..."
+                    if DEBUG:   print ">> Found an 'startTime' tag on instance {}...".format(i.id)
                     cronEC2Exec(tag['Value'], i, "start")
             
                 if  tag['Key'] == "stopTime" and tag['Value'] is not None:
-                    #print ">> Found an 'stopTime' tag..."
+                    if DEBUG:   print ">> Found an 'stopTime' tag on instance {}...".format(i.id)
                     cronEC2Exec(tag['Value'], i, "stop")
                     
                 if  tag['Key'] == "createAmiTime":
-                    #print ">> Found an 'stopTime' tag..."
+                    if DEBUG:   print ">> Found an 'stopTime' tag on instance {}...".format(i.id)
                     cronEC2Exec(tag['Value'], i, "createAmi")
 
+                if  tag['Key'] == "deleteAmiTime":
+                    if DEBUG:   print ">> Found an 'stopTime' tag..."
+                    cronEC2Exec(tag['Value'], i, "deleteAmi")
+
+
     return True
+
+def checkAMIs():
+    '''Function which lists images, for example, to perform deletions
+    '''
+    
+    amis = ec2_client.describe_images(Filters=[ { 'Name': 'tag-key', 'Values': [ "deleteAmiTime" ] } ])
+    if amis is None:
+        return True
+        
+    for ami in amis["Images"]:
+        if DEBUG:   print "[checkAMIs] La AMI {0} tiene los tags {1}".format(ami["ImageId"], ami["Tags"])
+            
+        for tag in ami["Tags"]:
+            if tag['Key'] == "deleteAmiTime":
+                cronAMIExec(tag['Value'], ami["ImageId"], "delete")
+
 
 def checkEBS(ec2):
     '''List tags in EBS Volumes and perform operations on them
     '''
     
     for ebs in ec2.volumes.all():
-        #print "Volumen {0} con tags {1}".format(ebs.id, ebs.tags)
+        if DEBUG:   print "Volumen {0} con tags {1}".format(ebs.id, ebs.tags)
+
         if ebs.tags:
             for tag in ebs.tags:
                 if tag['Key'] == "createSnapshotTime" and tag['Value'] is not None:
-                    print ">> Found a 'createSnapshotTime' tag with value {}".format(tag['Value'])
+                    if DEBUG:   print ">> Found a 'createSnapshotTime' tag with value {}".format(tag['Value'])
                     cronEBSExec(tag['Value'], ebs, "createSnapshot")
     
     return True
@@ -160,9 +201,11 @@ def lambda_handler(event, context):
     
     try:
         if checkEC2(ec2):
-            print "EC2 Success!"
+            print "EC2 checked!"
+        if checkAMIs():
+            print "AMIs checked!"
         if checkEBS(ec2):
-            print "Volumes Success!"
+            print "Volumes checked!"
 
     except Exception as e:
         print('Check failed!')
@@ -171,3 +214,6 @@ def lambda_handler(event, context):
     finally:
         print('Check complete at {}'.format(str(datetime.now())))
         return "OK"
+
+def "__name__" == "__main__":
+    lambda_handler(None, None)
