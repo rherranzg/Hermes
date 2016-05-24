@@ -220,6 +220,9 @@ def lambda_handler(event, context):
     finally:
         print('Check complete at {}'.format(str(datetime.now())))
         return "OK"
+<<<<<<< HEAD
 
 def "__name__" == "__main__":
     lambda_handler(None, None)
+=======
+>>>>>>> ed7b023b01e9fc6f4d9cf6730bef2512370533c5
