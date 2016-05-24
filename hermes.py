@@ -83,8 +83,11 @@ def isTime(cronString):
         return True
     
 def cronEC2Exec(cron, instance, action):
-    
-    print "> {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
+    '''
+    Function to control operations on EC2 instances
+    '''
+
+    if DEBUG:   print "> {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
     
     if isTime(cron):
         if action == "start" and instance.state["Name"] == "stopped":
@@ -106,14 +109,16 @@ def cronEC2Exec(cron, instance, action):
             print "#################################"
             print "## Creating AMI for instance {0}...".format(instance.id)
             print "#################################"
-            client = boto3.client('ec2')
-            response = client.create_image( DryRun=False, InstanceId=instance.id, Name='ami-{0}-{1}'.format(instance.id, date.today()), Description='AMI backup for instance {0}'.format(instance.id), NoReboot=True)
+            response = ec2_client.create_image( DryRun=False, InstanceId=instance.id, Name='ami-{0}-{1}'.format(instance.id, date.today()), Description='AMI backup for instance {0}'.format(instance.id), NoReboot=True)
 
 def cronAMIExec(cron, ami, action):
-    if DEBUG:
-        print "[cronAMIExec] > {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
+    '''
+    Function to control operations on AMIs
+    '''
+    if DEBUG:   print "[cronAMIExec] > {2}. Current date is {0} and cron expression is {1}".format(t, cron, action)
     
     if isTime(cron):
+
         if action == "delete" and ami is not None:
             # Delete AMI
             print "#################################"
@@ -123,6 +128,9 @@ def cronAMIExec(cron, ami, action):
             response = client.deregister_image( DryRun=False, ImageId=ami )
 
 def cronEBSExec(cron, ebs, action):
+    '''
+    Function to control operations on EBSs
+    '''
     
     if isTime(cron):
         if action == "createSnapshot":
@@ -136,7 +144,8 @@ def cronEBSExec(cron, ebs, action):
 
 
 def checkEC2(ec2):
-    '''List tags in EC2 instances and perform operations on instances
+    '''
+    List tags in EC2 instances and perform operations on instances
     '''
     
     for i in ec2.instances.all():
@@ -155,15 +164,11 @@ def checkEC2(ec2):
                     if DEBUG:   print ">> Found an 'stopTime' tag on instance {}...".format(i.id)
                     cronEC2Exec(tag['Value'], i, "createAmi")
 
-                if  tag['Key'] == "deleteAmiTime":
-                    if DEBUG:   print ">> Found an 'stopTime' tag..."
-                    cronEC2Exec(tag['Value'], i, "deleteAmi")
-
-
     return True
 
 def checkAMIs():
-    '''Function which lists images, for example, to perform deletions
+    '''
+    Function which lists images, for example, to perform deletions
     '''
     
     amis = ec2_client.describe_images(Filters=[ { 'Name': 'tag-key', 'Values': [ "deleteAmiTime" ] } ])
@@ -179,7 +184,8 @@ def checkAMIs():
 
 
 def checkEBS(ec2):
-    '''List tags in EBS Volumes and perform operations on them
+    '''
+    List tags in EBS Volumes and perform operations on them
     '''
     
     for ebs in ec2.volumes.all():

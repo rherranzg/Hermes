@@ -44,6 +44,7 @@ Tag your EC2 instances with this tags:
 
 - **startTime**: Start the instance.
 - **stopTime**: Stop the instance.
+- **createAmiTime**: Create an AMI based on the instance
 - and more to come... for example, rebootTime, terminateTime or createAMITime.
 
 ### EBS
@@ -52,9 +53,15 @@ Current supported tags for EBS Volumes are:
 
 - **createSnapshotTime**: Generates a snapshot of specified EBS Volume.
 
+### AMI
+
+Current supported tags for AMIs are:
+
+- **deleteAmiTime**: Delete the specified AMI
+
 ## Limitations
 
 - Currently it only supports EC2 and EBS services. More services coming.
-- The HOUR you define in cron, is Ireland Time (usually 1 hour less than Madrid time).
+- The HOUR you define in cron, is Ireland Time (usually 1 hour less than Madrid time). Be careful with Daylight Saving Time (DST)!
 - When you configure the Lambda function, you specify time interval which Lambda function runs. You must match the "current" time (the exact time where Lambda function runs) with the exact time you define in your cron expression, so don't be very strict with minutes. Wildcards and ranges are recommended.
 - The resources must be created out of Lambda before using this function.
