@@ -16,9 +16,9 @@ The name of the tag is the action, and the value is a cron expression, including
 
 Tage Name | Tag Value | Description
 ---- | ---- | ---
-startTime | * 9 * * 1-5 | (weekdays at 9AM, start my instances)
-stopTime | * 18 * * * |  (my instances must be stopped at 6PM)
-startTime | * 12 7,14,21 * * | (at 12 AM, the days 7, 14 and 21 of every month, start an instance)
+startInstance | * 9 * * 1-5 | (weekdays at 9AM, start my instances)
+stopInstance | * 18 * * * |  (my instances must be stopped at 6PM)
+startInstance | * 12 7,14,21 * * | (at 12 AM, the days 7, 14 and 21 of every month, start an instance)
 
 ## Set up a new Lambda Function.
 
@@ -42,28 +42,28 @@ You need to do some manual steps before start.
 
 Tag your EC2 instances with this tags:
 
-- **startTime**: Start the instance.
-- **stopTime**: Stop the instance.
-- **createAmiTime**: Create an AMI based on the instance
+- **startInstance**: Start the instance.
+- **stopInstance**: Stop the instance.
+- **createAmi**: Create an AMI based on the instance
 - and more to come... for example, rebootTime, terminateTime or createAMITime.
 
 ### EBS
 
 Current supported tags for EBS Volumes are:
 
-- **createSnapshotTime**: Generates a snapshot of specified EBS Volume.
+- **createSnapshot**: Generates a snapshot of specified EBS Volume.
 
 ### AMI
 
 Current supported tags for AMIs are:
 
-- **deleteAmiTime**: Delete the specified AMI
+- **deleteAmi**: Delete the specified AMI
 
 ### Snapshot
 
 Current supported tags for Snapshots are:
 
-- **deleteSnapshotTime**: Delete the specified Snapshot
+- **deleteSnapshot**: Delete the specified Snapshot
 
 ## Limitations
 

@@ -178,16 +178,16 @@ def checkEC2(ec2):
         #print "> Instance {0} is {1}".format(i.id, i.state["Name"])
         if i.tags:
             for tag in i.tags:
-                if tag['Key'] == "startTime" and tag['Value'] is not None:
-                    if DEBUG:   print ">> Found an 'startTime' tag on instance {}...".format(i.id)
+                if tag['Key'] == "startInstance" and tag['Value'] is not None:
+                    if DEBUG:   print ">> Found an 'startInstance' tag on instance {}...".format(i.id)
                     cronEC2Exec(tag['Value'], i, "start")
             
-                if  tag['Key'] == "stopTime" and tag['Value'] is not None:
-                    if DEBUG:   print ">> Found an 'stopTime' tag on instance {}...".format(i.id)
+                if  tag['Key'] == "stopInstance" and tag['Value'] is not None:
+                    if DEBUG:   print ">> Found an 'stopInstance' tag on instance {}...".format(i.id)
                     cronEC2Exec(tag['Value'], i, "stop")
                     
-                if  tag['Key'] == "createAmiTime":
-                    if DEBUG:   print ">> Found an 'stopTime' tag on instance {}...".format(i.id)
+                if  tag['Key'] == "createAmi":
+                    if DEBUG:   print ">> Found an 'createAmi' tag on instance {}...".format(i.id)
                     cronEC2Exec(tag['Value'], i, "createAmi")
 
     return True
@@ -197,7 +197,7 @@ def checkAMIs():
     Function which lists images, for example, to perform deletions
     '''
     
-    amis = ec2_client.describe_images(Filters=[ { 'Name': 'tag-key', 'Values': [ "deleteAmiTime" ] } ])
+    amis = ec2_client.describe_images(Filters=[ { 'Name': 'tag-key', 'Values': [ "deleteAmi" ] } ])
     if amis is None:
         return True
         
@@ -205,7 +205,7 @@ def checkAMIs():
         if DEBUG:   print "[checkAMIs] La AMI {0} tiene los tags {1}".format(ami["ImageId"], ami["Tags"])
             
         for tag in ami["Tags"]:
-            if tag['Key'] == "deleteAmiTime":
+            if tag['Key'] == "deleteAmi":
                 cronAMIExec(tag['Value'], ami["ImageId"], "delete")
 
 
@@ -219,8 +219,8 @@ def checkEBS(ec2):
 
         if ebs.tags:
             for tag in ebs.tags:
-                if tag['Key'] == "createSnapshotTime" and tag['Value'] is not None:
-                    if DEBUG:   print ">> Found a 'createSnapshotTime' tag with value {}".format(tag['Value'])
+                if tag['Key'] == "createSnapshot" and tag['Value'] is not None:
+                    if DEBUG:   print ">> Found a 'createSnapshot' tag with value {}".format(tag['Value'])
                     cronEBSExec(tag['Value'], ebs, "createSnapshot")
     
 def checkSnapshots():
@@ -228,7 +228,7 @@ def checkSnapshots():
     Function which lists snapshots, for example, to perform deletions
     '''
     
-    snaps = ec2_client.describe_snapshots(Filters=[ { 'Name': 'tag-key', 'Values': [ "deleteSnapshotTime" ] } ])
+    snaps = ec2_client.describe_snapshots(Filters=[ { 'Name': 'tag-key', 'Values': [ "deleteSnapshot" ] } ])
     if snaps is None:
         return True
         
@@ -236,7 +236,7 @@ def checkSnapshots():
         if DEBUG:   print "[checkSnapshots] El snap {0} tiene los tags {1}".format(snap["SnapshotId"], snap["Tags"])
             
         for tag in snap["Tags"]:
-            if tag['Key'] == "deleteSnapshotTime":
+            if tag['Key'] == "deleteSnapshot":
                 cronSnapExec(tag['Value'], snap["SnapshotId"], "delete")
 
     return True
