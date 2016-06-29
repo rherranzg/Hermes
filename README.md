@@ -18,7 +18,7 @@ Tage Name | Tag Value | Description
 ---- | ---- | ---
 startInstance | * 9 * * 1-5 | (weekdays at 9AM, start my instances)
 stopInstance | * 18 * * * |  (my instances must be stopped at 6PM)
-startInstance | * 12 7,14,21 * * | (at 12 AM, the days 7, 14 and 21 of every month, start an instance)
+createSnapshot | * 12 7,14,21 * * | (at 12 AM, the days 7, 14 and 21 of every month, create a snapshot)
 
 ## Set up a new Lambda Function.
 
@@ -67,7 +67,7 @@ Current supported tags for Snapshots are:
 
 ## Limitations
 
-- Currently it only supports EC2 and EBS services. More services coming.
-- The HOUR you define in cron, is Ireland Time (usually 1 hour less than Madrid time). Be careful with Daylight Saving Time (DST)!
+- Currently it only supports EC2 instances, AMIs and EBS resources. More services coming.
+- The HOUR you define in cron, is UTC (usually 1 hour less than Madrid time, but be careful with Daylight Saving Time!).
 - When you configure the Lambda function, you specify time interval which Lambda function runs. You must match the "current" time (the exact time where Lambda function runs) with the exact time you define in your cron expression, so don't be very strict with minutes. Wildcards and ranges are recommended.
 - The resources must be created out of Lambda before using this function.
